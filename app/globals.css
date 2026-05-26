@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f7f3;
+  --foreground: #1a1f17;
+  --surface: #ffffff;
+  --border: #d9dfd3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at 10% 10%, #f1f7ec 0%, var(--background) 40%, #eef1f8 100%);
+  color: var(--foreground);
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+.page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.card {
+  width: min(56rem, 100%);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--surface) 92%, #f8fafc);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+.card h1 {
+  margin-top: 0;
+}
+
+.lede {
+  margin-bottom: 1.25rem;
+  color: color-mix(in srgb, var(--foreground) 75%, #5e7054);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.input {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: #fff;
+  color: var(--foreground);
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.input:focus {
+  outline: 2px solid #8dbb73;
+  outline-offset: 1px;
+}
+
+.hint {
+  color: color-mix(in srgb, var(--foreground) 65%, #67795e);
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(120deg, #567b43, #3f5f32);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 1rem;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.status.error {
+  background: #fdebec;
+  border: 1px solid #f4b4b8;
+  color: #8f1e2a;
+}
+
+.result-box {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 1rem;
+  background: color-mix(in srgb, #ffffff 92%, #f0f6eb);
+}
+
+.result-box h2 {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
