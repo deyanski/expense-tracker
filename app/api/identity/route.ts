@@ -63,7 +63,27 @@ export async function POST(request: Request) {
       fullName: parsed.data.fullName,
       employeeId: parsed.data.employeeId,
     });
-  } catch {
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "identity verification failed";
+
+    // Keep operational details in logs while returning safe client-facing messages.
+    console.error("identity-api-error", message);
+
+    if (message.includes("not configured")) {
+      return NextResponse.json(
+        { error: "identity service not configured" },
+        { status: 500 },
+      );
+    }
+
+    if (message.includes("identity lookup failed")) {
+      return NextResponse.json(
+        { error: "identity lookup failed" },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json({ error: "internal" }, { status: 500 });
   }
 }
