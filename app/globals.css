@@ -130,6 +130,38 @@ label {
   margin-top: 0;
 }
 
+.identity-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.identity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.85rem;
+  background: #fff;
+}
+
+.dot {
+  opacity: 0.55;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  color: #2d6f42;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.1rem 0.25rem;
+}
+
 @media (max-width: 760px) {
   .page {
     padding: 1rem;
@@ -137,5 +169,9 @@ label {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .identity-bar {
+    flex-direction: column;
   }
 }

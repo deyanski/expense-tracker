@@ -2,6 +2,7 @@
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
   "/api/expenses/route": "/api/expenses",
+  "/api/identity/route": "/api/identity",
   "/api/uploads/receipt/route": "/api/uploads/receipt",
   "/page": "/"
 }
