@@ -38,8 +38,6 @@ export async function POST(request: Request) {
     }
 
     const correlationId = request.headers.get("x-correlation-id") ?? randomUUID();
-    const idempotencyKey =
-      parsedInput.data.idempotencyKey ?? request.headers.get("x-idempotency-key") ?? randomUUID();
     const submittedAt = new Date().toISOString();
 
     let ocrResult: z.infer<typeof ocrWebhookOutputSchema> | undefined;
@@ -53,7 +51,6 @@ export async function POST(request: Request) {
       const ocrPayload = ocrWebhookInputSchema.parse({
         schemaVersion: "1.0",
         correlationId,
-        idempotencyKey,
         submittedAt,
         employee: {
           fullName: parsedInput.data.fullName,
@@ -80,7 +77,6 @@ export async function POST(request: Request) {
     const policyPayload = policyWebhookInputSchema.parse({
       schemaVersion: "1.0",
       correlationId,
-      idempotencyKey,
       submittedAt,
       employee: {
         fullName: parsedInput.data.fullName,

@@ -22,7 +22,6 @@ export const expenseIntakeInputSchema = z
     employeeId: z.string().trim().min(1).max(64),
     comment: z.string().trim().max(4000).optional(),
     receipt: receiptReferenceSchema.optional(),
-    idempotencyKey: z.string().trim().min(8).max(128).optional(),
   })
   .superRefine((value, ctx) => {
     const hasReceipt = Boolean(value.receipt);

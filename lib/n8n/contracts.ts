@@ -4,7 +4,6 @@ import { expenseStatusSchema } from "@/lib/schemas/expense";
 export const ocrWebhookInputSchema = z.object({
   schemaVersion: z.literal("1.0"),
   correlationId: z.string().uuid(),
-  idempotencyKey: z.string().min(8).max(128),
   submittedAt: z.string().datetime(),
   employee: z.object({
     fullName: z.string().min(2).max(120),
@@ -36,7 +35,6 @@ export type OcrWebhookOutput = z.infer<typeof ocrWebhookOutputSchema>;
 export const policyWebhookInputSchema = z.object({
   schemaVersion: z.literal("1.0"),
   correlationId: z.string().uuid(),
-  idempotencyKey: z.string().min(8).max(128),
   submittedAt: z.string().datetime(),
   employee: z.object({
     fullName: z.string().min(2).max(120),
