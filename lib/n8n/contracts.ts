@@ -20,7 +20,7 @@ export const ocrWebhookInputSchema = z.object({
 
 export type OcrWebhookInput = z.infer<typeof ocrWebhookInputSchema>;
 
-export const ocrWebhookOutputSchema = z.object({
+const ocrNormalizedOutputSchema = z.object({
   merchant: z.string().optional(),
   receiptDate: z.string().optional(),
   amount: z.number().positive().optional(),
@@ -29,6 +29,15 @@ export const ocrWebhookOutputSchema = z.object({
   confidence: z.number().min(0).max(1).optional(),
   categoryHint: z.string().optional(),
 });
+
+export const ocrWebhookOutputSchema = z.union([
+  ocrNormalizedOutputSchema,
+  z.object({ output: ocrNormalizedOutputSchema }).transform((value) => value.output),
+  z
+    .array(z.object({ output: ocrNormalizedOutputSchema }))
+    .min(1)
+    .transform((items) => items[0]!.output),
+]);
 
 export type OcrWebhookOutput = z.infer<typeof ocrWebhookOutputSchema>;
 
@@ -55,10 +64,19 @@ export const policyWebhookInputSchema = z.object({
 
 export type PolicyWebhookInput = z.infer<typeof policyWebhookInputSchema>;
 
-export const policyWebhookOutputSchema = z.object({
+const policyNormalizedOutputSchema = z.object({
   status: expenseStatusSchema,
   statusReason: z.string().min(1),
   expenseId: z.string().optional(),
 });
+
+export const policyWebhookOutputSchema = z.union([
+  policyNormalizedOutputSchema,
+  z.object({ output: policyNormalizedOutputSchema }).transform((value) => value.output),
+  z
+    .array(z.object({ output: policyNormalizedOutputSchema }))
+    .min(1)
+    .transform((items) => items[0]!.output),
+]);
 
 export type PolicyWebhookOutput = z.infer<typeof policyWebhookOutputSchema>;
