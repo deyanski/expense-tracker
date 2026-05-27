@@ -1,13 +1,16 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ALLOWED_RECEIPT_MIME_TYPES,
   MAX_RECEIPT_SIZE_BYTES,
+  expenseHistoryResponseSchema,
+  type ExpenseHistoryResponse,
   type PublicExpenseResult,
 } from "@/lib/schemas/expense";
 import type { EmployeeIdentity } from "@/lib/schemas/identity";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
+import { ExpenseHistoryTable } from "@/app/_components/ExpenseHistoryTable";
 
 type UploadInitResponse = {
   correlationId: string;
@@ -34,6 +37,54 @@ export function ExpenseIntakeForm({
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<PublicExpenseResult | null>(null);
+  const [history, setHistory] = useState<ExpenseHistoryResponse>({
+    items: [],
+    summary: {
+      totalCount: 0,
+      totalAmount: 0,
+      approvedCount: 0,
+      rejectedCount: 0,
+      manualReviewCount: 0,
+    },
+  });
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+
+  const fetchHistory = useCallback(async (): Promise<void> => {
+    setHistoryLoading(true);
+    setHistoryError(null);
+
+    try {
+      const params = new URLSearchParams({
+        fullName: identity.fullName,
+        employeeId: identity.employeeId,
+      });
+
+      const response = await fetch(`/api/history?${params.toString()}`);
+      const body = (await response.json()) as unknown;
+
+      if (!response.ok) {
+        const errorMessageFromApi =
+          typeof body === "object" && body !== null && "error" in body
+            ? String((body as { error?: unknown }).error ?? "history fetch failed")
+            : "history fetch failed";
+        throw new Error(errorMessageFromApi);
+      }
+
+      const parsed = expenseHistoryResponseSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new Error("history response mismatch");
+      }
+
+      setHistory(parsed.data);
+    } catch (error) {
+      setHistoryError(
+        error instanceof Error ? error.message : "Could not load expense history.",
+      );
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [identity.employeeId, identity.fullName]);
 
   const selectedFileLabel = useMemo(() => {
     if (!receiptFile) {
@@ -42,6 +93,16 @@ export function ExpenseIntakeForm({
 
     return `${receiptFile.name} (${Math.ceil(receiptFile.size / 1024)} KB)`;
   }, [receiptFile]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchHistory();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [fetchHistory]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,6 +224,7 @@ export function ExpenseIntakeForm({
       setResult(intakeBody as PublicExpenseResult);
       setComment("");
       setReceiptFile(null);
+      await fetchHistory();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "An unexpected error occurred.",
@@ -243,6 +305,15 @@ export function ExpenseIntakeForm({
           ) : null}
         </section>
       ) : null}
+
+      <ExpenseHistoryTable
+        history={history}
+        loading={historyLoading}
+        errorMessage={historyError}
+        onRefresh={() => {
+          void fetchHistory();
+        }}
+      />
     </section>
   );
 }

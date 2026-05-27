@@ -106,6 +106,12 @@ label {
   cursor: not-allowed;
 }
 
+.button.secondary {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
 .status {
   margin-top: 1rem;
   border-radius: 0.75rem;
@@ -128,6 +134,100 @@ label {
 
 .result-box h2 {
   margin-top: 0;
+}
+
+.history-wrap {
+  margin-top: 1.25rem;
+  border-top: 1px dashed var(--border);
+  padding-top: 1.25rem;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.history-header h2 {
+  margin: 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.summary-card {
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  background: color-mix(in srgb, #ffffff 94%, #f6f9ef);
+}
+
+.summary-card p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--foreground) 72%, #5e7054);
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.05rem;
+}
+
+.empty-state {
+  margin-top: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.85rem;
+  padding: 1rem;
+  background: color-mix(in srgb, #ffffff 92%, #eef5fb);
+}
+
+.empty-state h3 {
+  margin: 0;
+}
+
+.empty-state p {
+  margin: 0.4rem 0 0;
+  color: color-mix(in srgb, var(--foreground) 74%, #5d6b73);
+}
+
+.history-table-wrap {
+  margin-top: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid #edf1e8;
+  white-space: nowrap;
+}
+
+.history-table th {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 70%, #5c6d56);
+  background: color-mix(in srgb, #ffffff 90%, #f0f6eb);
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .identity-bar {
@@ -173,5 +273,9 @@ label {
 
   .identity-bar {
     flex-direction: column;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

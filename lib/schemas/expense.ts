@@ -51,3 +51,34 @@ export const publicExpenseResultSchema = z.object({
 });
 
 export type PublicExpenseResult = z.infer<typeof publicExpenseResultSchema>;
+
+export const expenseHistoryItemSchema = z.object({
+  id: z.string().uuid(),
+  merchant: z.string().nullable(),
+  amount: z.number(),
+  currency: z.string().min(3).max(3),
+  category: z.string(),
+  status: expenseStatusSchema,
+  statusReason: z.string(),
+  createdAt: z.string().datetime(),
+  receiptDate: z.string().nullable(),
+  employeeComment: z.string().nullable(),
+  hasReceipt: z.boolean(),
+});
+
+export const expenseHistorySummarySchema = z.object({
+  totalCount: z.number().int().nonnegative(),
+  totalAmount: z.number().nonnegative(),
+  approvedCount: z.number().int().nonnegative(),
+  rejectedCount: z.number().int().nonnegative(),
+  manualReviewCount: z.number().int().nonnegative(),
+});
+
+export const expenseHistoryResponseSchema = z.object({
+  items: z.array(expenseHistoryItemSchema),
+  summary: expenseHistorySummarySchema,
+});
+
+export type ExpenseHistoryItem = z.infer<typeof expenseHistoryItemSchema>;
+export type ExpenseHistorySummary = z.infer<typeof expenseHistorySummarySchema>;
+export type ExpenseHistoryResponse = z.infer<typeof expenseHistoryResponseSchema>;
