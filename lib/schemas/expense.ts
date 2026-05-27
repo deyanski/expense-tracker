@@ -60,7 +60,7 @@ export const expenseHistoryItemSchema = z.object({
   category: z.string(),
   status: expenseStatusSchema,
   statusReason: z.string(),
-  createdAt: z.string().datetime(),
+  createdAt: z.string().datetime({ offset: true }),
   receiptDate: z.string().nullable(),
   employeeComment: z.string().nullable(),
   hasReceipt: z.boolean(),

@@ -37,6 +37,15 @@ function parseAmount(value: number | string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function normalizeDateTime(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return new Date(0).toISOString();
+  }
+
+  return parsed.toISOString();
+}
+
 function normalizeRows(rows: ExpenseRow[]): ExpenseHistoryItem[] {
   return rows.map((row) => ({
     id: row.id,
@@ -46,7 +55,7 @@ function normalizeRows(rows: ExpenseRow[]): ExpenseHistoryItem[] {
     category: row.category,
     status: row.status,
     statusReason: row.status_reason,
-    createdAt: row.created_at,
+    createdAt: normalizeDateTime(row.created_at),
     receiptDate: row.receipt_date,
     employeeComment: row.employee_comment,
     hasReceipt: Boolean(row.receipt_bucket && row.receipt_object_path),
