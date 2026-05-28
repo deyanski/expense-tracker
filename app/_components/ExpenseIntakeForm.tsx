@@ -236,7 +236,7 @@ export function ExpenseIntakeForm({
     setSubmissionStartedAt(new Date().toISOString());
     setSubmissionHasReceipt(Boolean(receiptFile));
     setSubmissionStage(receiptFile ? "uploading" : "policy");
-    let promoteToPolicyTimer: ReturnType<typeof setTimeout> | undefined;
+    let promoteToPolicyTimer: number | undefined;
 
     try {
       let correlationId: string | undefined;
