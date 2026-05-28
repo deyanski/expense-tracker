@@ -342,9 +342,16 @@ export function ExpenseIntakeForm({
       setReceiptFile(null);
       await fetchHistory();
     } catch (error) {
-      setSubmissionStage("error");
       const message = error instanceof Error ? error.message : "An unexpected error occurred.";
       setErrorMessage(humanizeSubmissionError(message));
+
+      // Keep the error visible but reset draft/progress state for a clean retry.
+      setComment("");
+      setReceiptFile(null);
+      setSubmissionStage("idle");
+      setSubmissionHasReceipt(false);
+      setActiveCorrelationId(null);
+      setSubmissionStartedAt(null);
     } finally {
       if (promoteToPolicyTimer) {
         window.clearTimeout(promoteToPolicyTimer);
