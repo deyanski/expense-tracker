@@ -1,7 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { postWebhookJson, WebhookError } from "@/lib/n8n/client";
+import {
+  postWebhookJson,
+  WebhookError,
+  WebhookTimeoutError,
+} from "@/lib/n8n/client";
 import {
   ocrWebhookInputSchema,
   ocrWebhookOutputSchema,
@@ -17,7 +21,18 @@ function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400 });
 }
 
+function parseTimeoutMs(value: string | undefined, fallback: number): number {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 export async function POST(request: Request) {
+  let stage: "ocr" | "policy" | "none" = "none";
+
   try {
     const rawBody = await request.json();
 
@@ -39,10 +54,13 @@ export async function POST(request: Request) {
 
     const correlationId = request.headers.get("x-correlation-id") ?? randomUUID();
     const submittedAt = new Date().toISOString();
+    const ocrTimeoutMs = parseTimeoutMs(process.env.N8N_OCR_TIMEOUT_MS, 60_000);
+    const policyTimeoutMs = parseTimeoutMs(process.env.N8N_POLICY_TIMEOUT_MS, 60_000);
 
     let ocrResult: z.infer<typeof ocrWebhookOutputSchema> | undefined;
 
     if (uploadedReceipt) {
+      stage = "ocr";
       const ocrWebhookUrl = process.env.N8N_OCR_WEBHOOK_URL;
       if (!ocrWebhookUrl) {
         throw new Error("N8N_OCR_WEBHOOK_URL is not configured");
@@ -65,6 +83,7 @@ export async function POST(request: Request) {
         token: process.env.N8N_WEBHOOK_BEARER_TOKEN,
         body: ocrPayload,
         retries: 0,
+        timeoutMs: ocrTimeoutMs,
       });
 
       ocrResult = ocrWebhookOutputSchema.parse(rawOcrResponse);
@@ -74,6 +93,8 @@ export async function POST(request: Request) {
     if (!policyWebhookUrl) {
       throw new Error("N8N_POLICY_WEBHOOK_URL is not configured");
     }
+
+    stage = "policy";
 
     const policyPayload = policyWebhookInputSchema.parse({
       schemaVersion: "1.0",
@@ -94,6 +115,7 @@ export async function POST(request: Request) {
       token: process.env.N8N_WEBHOOK_BEARER_TOKEN,
       body: policyPayload,
       retries: 0,
+      timeoutMs: policyTimeoutMs,
     });
 
     const policyResult = policyWebhookOutputSchema.parse(rawPolicyResponse);
@@ -108,6 +130,27 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
+    if (error instanceof WebhookTimeoutError) {
+      if (stage === "ocr") {
+        return NextResponse.json(
+          { error: "ocr processing timed out; please retry" },
+          { status: 504 },
+        );
+      }
+
+      if (stage === "policy") {
+        return NextResponse.json(
+          { error: "policy evaluation timed out; please retry" },
+          { status: 504 },
+        );
+      }
+
+      return NextResponse.json(
+        { error: "downstream request timed out; please retry" },
+        { status: 504 },
+      );
+    }
+
     if (error instanceof WebhookError && error.status >= 400 && error.status < 500) {
       return badRequest("downstream rejected request");
     }

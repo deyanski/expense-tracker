@@ -28,6 +28,16 @@ export class WebhookError extends Error {
   }
 }
 
+export class WebhookTimeoutError extends Error {
+  public readonly timeoutMs: number;
+
+  constructor(message: string, timeoutMs: number) {
+    super(message);
+    this.name = "WebhookTimeoutError";
+    this.timeoutMs = timeoutMs;
+  }
+}
+
 export async function postWebhookJson<T>(
   options: PostJsonOptions,
 ): Promise<T> {
@@ -62,7 +72,14 @@ export async function postWebhookJson<T>(
 
       return JSON.parse(text) as T;
     } catch (error) {
-      lastError = error;
+      if (error instanceof Error && error.name === "AbortError") {
+        lastError = new WebhookTimeoutError(
+          `webhook request timed out after ${timeoutMs}ms`,
+          timeoutMs,
+        );
+      } else {
+        lastError = error;
+      }
       if (attempt < retries) {
         await sleep(250 * (attempt + 1));
         continue;
