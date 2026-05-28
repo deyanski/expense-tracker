@@ -14,9 +14,19 @@ export const commentGuardWebhookInputSchema = z.object({
 
 export type CommentGuardWebhookInput = z.infer<typeof commentGuardWebhookInputSchema>;
 
-export const commentGuardWebhookOutputSchema = z.object({
+const commentGuardNormalizedOutputSchema = z.object({
   safe: z.boolean(),
 });
+
+export const commentGuardWebhookOutputSchema = z.union([
+  commentGuardNormalizedOutputSchema,
+  z.object({ output: commentGuardNormalizedOutputSchema }).transform((value) => value.output),
+  z
+    .array(z.object({ output: commentGuardNormalizedOutputSchema }))
+    .min(1)
+    .transform((items) => items[0]!.output),
+  z.boolean().transform((safe) => ({ safe })),
+]);
 
 export type CommentGuardWebhookOutput = z.infer<typeof commentGuardWebhookOutputSchema>;
 

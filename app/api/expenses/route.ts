@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     if (hasComment && !commentGuardWebhookUrl) {
       // Silent fallback by requirement: if guard is not configured, drop comment and continue.
       console.warn("comment-guard-not-configured", { correlationId });
-      effectiveComment = undefined;
+      effectiveComment = "";
     }
 
     if (hasComment && commentGuardWebhookUrl) {
@@ -101,15 +101,16 @@ export async function POST(request: Request) {
         );
 
         if (!commentGuardResult.safe) {
-          effectiveComment = undefined;
+          effectiveComment = "";
         }
       } catch (error) {
-        // Silent fallback by requirement: if guard fails or times out, drop comment and continue.
+        // Silent fallback by requirement: if guard fails or times out,
+        // pass an empty comment value to policy and continue.
         console.warn("comment-guard-fallback", {
           correlationId,
           reason: error instanceof Error ? error.message : "unknown",
         });
-        effectiveComment = undefined;
+        effectiveComment = "";
       }
     }
 
