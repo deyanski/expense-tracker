@@ -17,6 +17,14 @@ This repository forwards validated requests to external n8n workflows.
 - Input schema: `ocrWebhookInputSchema` in `lib/n8n/contracts.ts`
 - Output schema: `ocrWebhookOutputSchema` in `lib/n8n/contracts.ts`
 
+## Comment Guard Webhook
+
+- Env var: `N8N_COMMENT_GUARD_WEBHOOK_URL`
+- Purpose: Validate employee comment safety before policy evaluation.
+- Input schema: `commentGuardWebhookInputSchema` in `lib/n8n/contracts.ts`
+- Output schema: `commentGuardWebhookOutputSchema` in `lib/n8n/contracts.ts`
+- Behavior: if response is `{ "safe": false }` the API drops comment silently and continues.
+
 ## Policy Webhook
 
 - Env var: `N8N_POLICY_WEBHOOK_URL`

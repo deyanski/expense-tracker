@@ -1,6 +1,25 @@
 import { z } from "zod";
 import { expenseStatusSchema } from "@/lib/schemas/expense";
 
+export const commentGuardWebhookInputSchema = z.object({
+  schemaVersion: z.literal("1.0"),
+  correlationId: z.string().uuid(),
+  submittedAt: z.string().datetime(),
+  employee: z.object({
+    fullName: z.string().min(2).max(120),
+    employeeId: z.string().min(1).max(64),
+  }),
+  comment: z.string().trim().min(1).max(4000),
+});
+
+export type CommentGuardWebhookInput = z.infer<typeof commentGuardWebhookInputSchema>;
+
+export const commentGuardWebhookOutputSchema = z.object({
+  safe: z.boolean(),
+});
+
+export type CommentGuardWebhookOutput = z.infer<typeof commentGuardWebhookOutputSchema>;
+
 export const ocrWebhookInputSchema = z.object({
   schemaVersion: z.literal("1.0"),
   correlationId: z.string().uuid(),

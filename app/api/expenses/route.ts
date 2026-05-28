@@ -7,6 +7,8 @@ import {
   WebhookTimeoutError,
 } from "@/lib/n8n/client";
 import {
+  commentGuardWebhookInputSchema,
+  commentGuardWebhookOutputSchema,
   ocrWebhookInputSchema,
   ocrWebhookOutputSchema,
   policyWebhookInputSchema,
@@ -31,7 +33,7 @@ function parseTimeoutMs(value: string | undefined, fallback: number): number {
 }
 
 export async function POST(request: Request) {
-  let stage: "ocr" | "policy" | "none" = "none";
+  let stage: "comment-guard" | "ocr" | "policy" | "none" = "none";
 
   try {
     const rawBody = await request.json();
@@ -54,8 +56,62 @@ export async function POST(request: Request) {
 
     const correlationId = request.headers.get("x-correlation-id") ?? randomUUID();
     const submittedAt = new Date().toISOString();
+    const commentGuardTimeoutMs = parseTimeoutMs(
+      process.env.N8N_COMMENT_GUARD_TIMEOUT_MS,
+      20_000,
+    );
     const ocrTimeoutMs = parseTimeoutMs(process.env.N8N_OCR_TIMEOUT_MS, 60_000);
     const policyTimeoutMs = parseTimeoutMs(process.env.N8N_POLICY_TIMEOUT_MS, 60_000);
+    let effectiveComment = comment;
+
+    const commentGuardWebhookUrl = process.env.N8N_COMMENT_GUARD_WEBHOOK_URL;
+    const hasComment = Boolean(comment && comment.trim().length > 0);
+
+    if (hasComment && !commentGuardWebhookUrl) {
+      // Silent fallback by requirement: if guard is not configured, drop comment and continue.
+      console.warn("comment-guard-not-configured", { correlationId });
+      effectiveComment = undefined;
+    }
+
+    if (hasComment && commentGuardWebhookUrl) {
+      stage = "comment-guard";
+
+      const commentGuardPayload = commentGuardWebhookInputSchema.parse({
+        schemaVersion: "1.0",
+        correlationId,
+        submittedAt,
+        employee: {
+          fullName: parsedInput.data.fullName,
+          employeeId: parsedInput.data.employeeId,
+        },
+        comment,
+      });
+
+      try {
+        const rawCommentGuardResponse = await postWebhookJson<unknown>({
+          url: commentGuardWebhookUrl,
+          token: process.env.N8N_WEBHOOK_BEARER_TOKEN,
+          body: commentGuardPayload,
+          retries: 0,
+          timeoutMs: commentGuardTimeoutMs,
+        });
+
+        const commentGuardResult = commentGuardWebhookOutputSchema.parse(
+          rawCommentGuardResponse,
+        );
+
+        if (!commentGuardResult.safe) {
+          effectiveComment = undefined;
+        }
+      } catch (error) {
+        // Silent fallback by requirement: if guard fails or times out, drop comment and continue.
+        console.warn("comment-guard-fallback", {
+          correlationId,
+          reason: error instanceof Error ? error.message : "unknown",
+        });
+        effectiveComment = undefined;
+      }
+    }
 
     let ocrResult: z.infer<typeof ocrWebhookOutputSchema> | undefined;
 
@@ -75,7 +131,7 @@ export async function POST(request: Request) {
           employeeId: parsedInput.data.employeeId,
         },
         receipt: uploadedReceipt,
-        comment,
+        comment: effectiveComment,
       });
 
       const rawOcrResponse = await postWebhookJson<unknown>({
@@ -104,7 +160,7 @@ export async function POST(request: Request) {
         fullName: parsedInput.data.fullName,
         employeeId: parsedInput.data.employeeId,
       },
-      comment,
+      comment: effectiveComment,
       receipt: uploadedReceipt,
       ocr: ocrResult,
       textOnly: !uploadedReceipt,
@@ -134,6 +190,13 @@ export async function POST(request: Request) {
       if (stage === "ocr") {
         return NextResponse.json(
           { error: "ocr processing timed out; please retry" },
+          { status: 504 },
+        );
+      }
+
+      if (stage === "comment-guard") {
+        return NextResponse.json(
+          { error: "comment safety validation timed out; please retry" },
           { status: 504 },
         );
       }
