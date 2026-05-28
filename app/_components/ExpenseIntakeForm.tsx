@@ -201,7 +201,7 @@ export function ExpenseIntakeForm({
   }, [submissionHasReceipt, submissionStage]);
 
   const showSubmissionPanel =
-    submissionStage !== "idle" || Boolean(result) || Boolean(errorMessage);
+    submissionStage !== "idle" || Boolean(result);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
