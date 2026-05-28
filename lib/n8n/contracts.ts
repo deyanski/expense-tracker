@@ -20,6 +20,7 @@ const commentGuardNormalizedOutputSchema = z.object({
 
 export const commentGuardWebhookOutputSchema = z.union([
   commentGuardNormalizedOutputSchema,
+  z.array(commentGuardNormalizedOutputSchema).min(1).transform((items) => items[0]!),
   z.object({ output: commentGuardNormalizedOutputSchema }).transform((value) => value.output),
   z
     .array(z.object({ output: commentGuardNormalizedOutputSchema }))
