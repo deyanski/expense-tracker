@@ -48,6 +48,12 @@
       "namedRegex": "^/api/director/identity(?:/)?$"
     },
     {
+      "page": "/api/director/overview",
+      "regex": "^/api/director/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/director/overview(?:/)?$"
+    },
+    {
       "page": "/api/expenses",
       "regex": "^/api/expenses(?:/)?$",
       "routeKeys": {},

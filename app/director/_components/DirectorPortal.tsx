@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DirectorIdentity } from "@/lib/schemas/identity";
 import { DirectorAccessForm } from "@/app/director/_components/DirectorAccessForm";
 import { DirectorEmbeddedChat } from "@/app/director/_components/DirectorEmbeddedChat";
+import { DirectorOverviewPanel } from "@/app/director/_components/DirectorOverviewPanel";
 
 const STORAGE_KEY = "expense-tracker.director";
 
@@ -92,12 +93,15 @@ export function DirectorPortal() {
   }
 
   return (
-    <DirectorEmbeddedChat
-      identity={identity}
-      onSignOut={() => {
-        window.localStorage.removeItem(STORAGE_KEY);
-        setIdentity(null);
-      }}
-    />
+    <div className="director-grid">
+      <DirectorOverviewPanel identity={identity} />
+      <DirectorEmbeddedChat
+        identity={identity}
+        onSignOut={() => {
+          window.localStorage.removeItem(STORAGE_KEY);
+          setIdentity(null);
+        }}
+      />
+    </div>
   );
 }

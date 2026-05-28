@@ -500,6 +500,76 @@ label {
   width: min(72rem, 100%);
 }
 
+.director-grid {
+  width: min(90rem, 100%);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.director-grid .director-shell {
+  width: 100%;
+}
+
+.director-overview-card h2 {
+  margin: 0;
+}
+
+.director-overview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.director-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.director-filters {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.director-filters .actions {
+  height: 100%;
+  align-items: end;
+}
+
+.director-table-meta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.director-table-meta p {
+  margin: 0;
+  color: color-mix(in srgb, var(--foreground) 72%, #536c49);
+}
+
+.row-subcopy {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.74rem;
+  color: color-mix(in srgb, var(--foreground) 72%, #5c6d56);
+}
+
+.trend-up {
+  color: #1f6b3f;
+}
+
+.trend-down {
+  color: #a03238;
+}
+
 .director-header {
   display: flex;
   justify-content: space-between;
@@ -551,6 +621,23 @@ label {
 
   .director-header {
     flex-direction: column;
+  }
+
+  .director-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .director-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .director-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .director-table-meta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .ticket-grid {
