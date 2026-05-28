@@ -42,6 +42,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/api/director/decision",
+      "regex": "^/api/director/decision(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/director/decision(?:/)?$"
+    },
+    {
       "page": "/api/director/identity",
       "regex": "^/api/director/identity(?:/)?$",
       "routeKeys": {},

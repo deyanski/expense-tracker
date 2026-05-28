@@ -2,13 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { DirectorIdentity } from "@/lib/schemas/identity";
-import type { DirectorOverviewResponse, DirectorOverviewItem } from "@/lib/schemas/director";
+import type {
+  DirectorOverviewResponse,
+  DirectorOverviewItem,
+  DirectorDecisionResponse,
+} from "@/lib/schemas/director";
 
 type DirectorOverviewPanelProps = {
   identity: DirectorIdentity;
 };
 
 type StatusFilter = "all" | "Approved" | "Rejected" | "Manual Review";
+type SortKey = "createdAt" | "employee" | "amount" | "category" | "status";
+type SortDirection = "asc" | "desc";
+
+const PAGE_SIZE = 12;
 
 function formatMoney(value: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", {
@@ -36,6 +44,33 @@ function parseDateInput(value: string): number | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed.getTime();
 }
 
+function compareItems(
+  left: DirectorOverviewItem,
+  right: DirectorOverviewItem,
+  sortKey: SortKey,
+  direction: SortDirection,
+): number {
+  const multiplier = direction === "asc" ? 1 : -1;
+
+  if (sortKey === "createdAt") {
+    return (new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime()) * multiplier;
+  }
+
+  if (sortKey === "amount") {
+    return (left.amount - right.amount) * multiplier;
+  }
+
+  if (sortKey === "employee") {
+    return ((left.employeeName ?? "").localeCompare(right.employeeName ?? "")) * multiplier;
+  }
+
+  if (sortKey === "category") {
+    return left.category.localeCompare(right.category) * multiplier;
+  }
+
+  return left.status.localeCompare(right.status) * multiplier;
+}
+
 export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) {
   const [data, setData] = useState<DirectorOverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +81,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
   const [searchTerm, setSearchTerm] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("createdAt");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [page, setPage] = useState(1);
+  const [decisionBusyId, setDecisionBusyId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -147,8 +186,22 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
     });
   }, [categoryFilter, data, fromDate, searchTerm, statusFilter, toDate]);
 
+  const sortedItems = useMemo(() => {
+    const next = [...filteredItems];
+    next.sort((left, right) => compareItems(left, right, sortKey, sortDirection));
+    return next;
+  }, [filteredItems, sortDirection, sortKey]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+
+  const pagedItems = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return sortedItems.slice(start, start + PAGE_SIZE);
+  }, [currentPage, sortedItems]);
+
   const tableSummary = useMemo(() => {
-    return filteredItems.reduce(
+    return sortedItems.reduce(
       (acc, item) => {
         acc.count += 1;
         acc.amount += item.amount;
@@ -156,7 +209,7 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
       },
       { count: 0, amount: 0 },
     );
-  }, [filteredItems]);
+  }, [sortedItems]);
 
   const trendPercent = useMemo(() => {
     const summary = data?.summary;
@@ -170,6 +223,66 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
 
     return (summary.last30Amount - summary.previous30Amount) / summary.previous30Amount;
   }, [data]);
+
+  async function applyDecision(expenseId: string, status: "Approved" | "Rejected" | "Manual Review") {
+    setErrorMessage(null);
+    setDecisionBusyId(expenseId);
+
+    try {
+      const response = await fetch("/api/director/decision", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          fullName: identity.fullName,
+          directorId: identity.directorId,
+          expenseId,
+          status,
+        }),
+      });
+
+      const body = (await response.json()) as DirectorDecisionResponse | { error?: string };
+
+      if (!response.ok) {
+        const message = "error" in body ? (body.error ?? "decision failed") : "decision failed";
+        setErrorMessage(message);
+        return;
+      }
+
+      const next = body as DirectorDecisionResponse;
+      setData((current) => {
+        if (!current) {
+          return current;
+        }
+
+        return {
+          ...current,
+          items: current.items.map((item) =>
+            item.id === next.expenseId
+              ? {
+                  ...item,
+                  status: next.status,
+                  statusReason: next.statusReason,
+                }
+              : item,
+          ),
+        };
+      });
+    } catch {
+      setErrorMessage("internal");
+    } finally {
+      setDecisionBusyId(null);
+    }
+  }
+
+  function toggleSort(next: SortKey) {
+    if (sortKey === next) {
+      setSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+
+    setSortKey(next);
+    setSortDirection(next === "createdAt" ? "desc" : "asc");
+  }
 
   const overview = data?.summary;
   const displayCurrency = data?.items[0]?.currency ?? "USD";
@@ -228,7 +341,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
           <select
             className="input"
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+            onChange={(event) => {
+              setStatusFilter(event.target.value as StatusFilter);
+              setPage(1);
+            }}
           >
             <option value="all">All</option>
             <option value="Approved">Approved</option>
@@ -242,7 +358,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
           <select
             className="input"
             value={categoryFilter}
-            onChange={(event) => setCategoryFilter(event.target.value)}
+            onChange={(event) => {
+              setCategoryFilter(event.target.value);
+              setPage(1);
+            }}
           >
             <option value="all">All</option>
             {categoryOptions.map((category) => (
@@ -258,7 +377,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
           <input
             className="input"
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setPage(1);
+            }}
             placeholder="Employee, merchant, status reason"
           />
         </label>
@@ -269,7 +391,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
             className="input"
             type="date"
             value={fromDate}
-            onChange={(event) => setFromDate(event.target.value)}
+            onChange={(event) => {
+              setFromDate(event.target.value);
+              setPage(1);
+            }}
           />
         </label>
 
@@ -279,7 +404,10 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
             className="input"
             type="date"
             value={toDate}
-            onChange={(event) => setToDate(event.target.value)}
+            onChange={(event) => {
+              setToDate(event.target.value);
+              setPage(1);
+            }}
           />
         </label>
 
@@ -293,6 +421,7 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
               setSearchTerm("");
               setFromDate("");
               setToDate("");
+              setPage(1);
             }}
           >
             Reset Filters
@@ -309,40 +438,98 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
         </p>
       </div>
 
-      {!loading && filteredItems.length === 0 ? (
+      {!loading && sortedItems.length === 0 ? (
         <section className="empty-state">
           <h3>No expenses in this slice</h3>
           <p>Adjust filters or date range to reveal more records for this view.</p>
         </section>
       ) : null}
 
-      {filteredItems.length > 0 ? (
-        <div className="history-table-wrap">
-          <table className="history-table">
-            <thead>
-              <tr>
-                <th>Created</th>
-                <th>Employee</th>
-                <th>Merchant</th>
-                <th>Amount</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.map((item) => (
-                <DirectorTableRow key={item.id} item={item} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {sortedItems.length > 0 ? (
+        <>
+          <div className="history-table-wrap">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>
+                    <button className="table-sort" type="button" onClick={() => toggleSort("createdAt")}>
+                      Created {sortKey === "createdAt" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
+                  <th>
+                    <button className="table-sort" type="button" onClick={() => toggleSort("employee")}>
+                      Employee {sortKey === "employee" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
+                  <th>Merchant</th>
+                  <th>
+                    <button className="table-sort" type="button" onClick={() => toggleSort("amount")}>
+                      Amount {sortKey === "amount" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
+                  <th>
+                    <button className="table-sort" type="button" onClick={() => toggleSort("category")}>
+                      Category {sortKey === "category" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
+                  <th>
+                    <button className="table-sort" type="button" onClick={() => toggleSort("status")}>
+                      Status {sortKey === "status" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+                    </button>
+                  </th>
+                  <th>Reason</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pagedItems.map((item) => (
+                  <DirectorTableRow
+                    key={item.id}
+                    item={item}
+                    busy={decisionBusyId === item.id}
+                    onDecision={applyDecision}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="director-pagination">
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => setPage((current) => Math.max(1, Math.min(current, totalPages) - 1))}
+              disabled={currentPage <= 1}
+            >
+              Previous
+            </button>
+            <p>
+              Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+            </p>
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => setPage((current) => Math.min(totalPages, Math.min(current, totalPages) + 1))}
+              disabled={currentPage >= totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </>
       ) : null}
     </section>
   );
 }
 
-function DirectorTableRow({ item }: { item: DirectorOverviewItem }) {
+function DirectorTableRow({
+  item,
+  busy,
+  onDecision,
+}: {
+  item: DirectorOverviewItem;
+  busy: boolean;
+  onDecision: (expenseId: string, status: "Approved" | "Rejected" | "Manual Review") => void;
+}) {
   return (
     <tr>
       <td>{formatDate(item.createdAt)}</td>
@@ -359,6 +546,34 @@ function DirectorTableRow({ item }: { item: DirectorOverviewItem }) {
       <td>
         {item.statusReason}
         {item.hasComment ? <span className="row-subcopy">with employee comment</span> : null}
+      </td>
+      <td>
+        <div className="row-actions">
+          <button
+            className="chip"
+            type="button"
+            onClick={() => onDecision(item.id, "Approved")}
+            disabled={busy}
+          >
+            Approve
+          </button>
+          <button
+            className="chip"
+            type="button"
+            onClick={() => onDecision(item.id, "Rejected")}
+            disabled={busy}
+          >
+            Reject
+          </button>
+          <button
+            className="chip"
+            type="button"
+            onClick={() => onDecision(item.id, "Manual Review")}
+            disabled={busy}
+          >
+            Review
+          </button>
+        </div>
       </td>
     </tr>
   );

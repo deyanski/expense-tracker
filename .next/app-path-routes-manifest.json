@@ -1,6 +1,7 @@
 {
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
+  "/api/director/decision/route": "/api/director/decision",
   "/api/director/identity/route": "/api/director/identity",
   "/api/director/overview/route": "/api/director/overview",
   "/api/expenses/route": "/api/expenses",
