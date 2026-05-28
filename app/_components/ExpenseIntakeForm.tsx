@@ -201,7 +201,9 @@ export function ExpenseIntakeForm({
   }, [submissionHasReceipt, submissionStage]);
 
   const showSubmissionPanel =
-    submissionStage !== "idle" || Boolean(result);
+    submissionStage === "uploading" ||
+    submissionStage === "ocr" ||
+    submissionStage === "policy";
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
