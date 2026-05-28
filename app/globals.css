@@ -187,6 +187,26 @@ label {
   font-size: 0.84rem;
 }
 
+.process-empty-state {
+  margin-top: 0.8rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.85rem;
+  padding: 0.85rem 0.9rem;
+  background: color-mix(in srgb, #ffffff 92%, #eef5fb);
+}
+
+.process-empty-state p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.process-empty-state span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.84rem;
+  color: color-mix(in srgb, var(--foreground) 74%, #5d6b73);
+}
+
 .process-steps {
   list-style: none;
   margin: 0.85rem 0;

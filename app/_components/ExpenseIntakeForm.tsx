@@ -149,6 +149,7 @@ export function ExpenseIntakeForm({
   const statusSteps = useMemo(() => {
     const order: SubmissionStage[] = ["uploading", "ocr", "policy"];
     const currentIndex = order.indexOf(submissionStage);
+    const isSubmissionRunning = submissionStage === "uploading" || submissionStage === "ocr" || submissionStage === "policy";
 
     return [
       {
@@ -156,7 +157,9 @@ export function ExpenseIntakeForm({
         title: "Uploading receipt",
         detail: submissionHasReceipt
           ? "Sending your file to secure storage"
-          : "Skipped for comment-only submission",
+          : isSubmissionRunning
+            ? "Skipped for comment-only submission"
+            : "Waiting to start",
         state: submissionHasReceipt
           ? currentIndex > 0
             ? "done"
@@ -170,7 +173,9 @@ export function ExpenseIntakeForm({
         title: "OCR processing",
         detail: submissionHasReceipt
           ? "Extracting text and totals from receipt"
-          : "Skipped for comment-only submission",
+          : isSubmissionRunning
+            ? "Skipped for comment-only submission"
+            : "Waiting to start",
         state: submissionHasReceipt
           ? currentIndex > 1
             ? "done"
@@ -182,7 +187,9 @@ export function ExpenseIntakeForm({
       {
         key: "policy",
         title: "Policy evaluation",
-        detail: "Validating rules and writing final decision",
+        detail: isSubmissionRunning
+          ? "Validating rules and writing final decision"
+          : "Waiting to start",
         state:
           submissionStage === "policy"
             ? "active"
@@ -192,6 +199,9 @@ export function ExpenseIntakeForm({
       },
     ] as const;
   }, [submissionHasReceipt, submissionStage]);
+
+  const showSubmissionPanel =
+    submissionStage !== "idle" || Boolean(result) || Boolean(errorMessage);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -418,42 +428,43 @@ export function ExpenseIntakeForm({
           ) : null}
         </label>
 
-        <section className="field-wide process-panel" aria-live="polite">
-          <header>
-            <h2>Submission Progress</h2>
-            <p>
-              {submissionStage === "idle" && "Ready to submit"}
-              {submissionStage === "uploading" && "Uploading receipt"}
-              {submissionStage === "ocr" && "Extracting receipt details"}
-              {submissionStage === "policy" && "Evaluating policy rules"}
-              {submissionStage === "success" && "Completed"}
-              {submissionStage === "error" && "Needs attention"}
-            </p>
-          </header>
+        {showSubmissionPanel ? (
+          <section className="field-wide process-panel" aria-live="polite">
+            <header>
+              <h2>Submission Progress</h2>
+              <p>
+                {submissionStage === "uploading" && "Uploading receipt"}
+                {submissionStage === "ocr" && "Extracting receipt details"}
+                {submissionStage === "policy" && "Evaluating policy rules"}
+                {submissionStage === "success" && "Completed"}
+                {submissionStage === "error" && "Needs attention"}
+              </p>
+            </header>
 
-          <ul className="process-steps">
-            {statusSteps.map((step) => (
-              <li key={step.key} className={`process-step ${step.state}`}>
-                <span className="step-dot" aria-hidden="true" />
-                <div>
-                  <strong>{step.title}</strong>
-                  <p>{step.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+            <ul className="process-steps">
+              {statusSteps.map((step) => (
+                <li key={step.key} className={`process-step ${step.state}`}>
+                  <span className="step-dot" aria-hidden="true" />
+                  <div>
+                    <strong>{step.title}</strong>
+                    <p>{step.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-          <div className="ticket-grid">
-            <p>
-              <span>Started</span>
-              <strong>{formatStartedAt(submissionStartedAt)}</strong>
-            </p>
-            <p>
-              <span>Correlation ID</span>
-              <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
-            </p>
-          </div>
-        </section>
+            <div className="ticket-grid">
+              <p>
+                <span>Started</span>
+                <strong>{formatStartedAt(submissionStartedAt)}</strong>
+              </p>
+              <p>
+                <span>Correlation ID</span>
+                <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
+              </p>
+            </div>
+          </section>
+        ) : null}
 
         <div className="field-wide actions">
           <button className="button" type="submit" disabled={submitting}>
