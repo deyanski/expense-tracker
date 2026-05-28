@@ -9,7 +9,8 @@ type PostJsonOptions = {
 };
 
 const DEFAULT_TIMEOUT_MS = 20_000;
-const DEFAULT_RETRIES = 1;
+// Do not retry by default because downstream policy webhooks are not idempotent in this PoC.
+const DEFAULT_RETRIES = 0;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

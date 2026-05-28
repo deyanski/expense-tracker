@@ -64,6 +64,7 @@ export async function POST(request: Request) {
         url: ocrWebhookUrl,
         token: process.env.N8N_WEBHOOK_BEARER_TOKEN,
         body: ocrPayload,
+        retries: 0,
       });
 
       ocrResult = ocrWebhookOutputSchema.parse(rawOcrResponse);
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
       url: policyWebhookUrl,
       token: process.env.N8N_WEBHOOK_BEARER_TOKEN,
       body: policyPayload,
+      retries: 0,
     });
 
     const policyResult = policyWebhookOutputSchema.parse(rawPolicyResponse);
