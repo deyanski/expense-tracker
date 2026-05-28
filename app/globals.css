@@ -81,6 +81,33 @@ label {
   outline-offset: 1px;
 }
 
+.upload-zone {
+  border: 1px dashed color-mix(in srgb, var(--border) 70%, #7f9f6e);
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  background: linear-gradient(160deg, #ffffff 0%, #f4f8f0 100%);
+}
+
+.upload-title {
+  font-size: 0.92rem;
+}
+
+.upload-input {
+  margin-top: 0.2rem;
+}
+
+.file-chip-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  background: #fff;
+  font-size: 0.82rem;
+}
+
 .hint {
   color: color-mix(in srgb, var(--foreground) 65%, #67795e);
   font-size: 0.85rem;
@@ -88,7 +115,13 @@ label {
 
 .actions {
   display: flex;
+  align-items: center;
+  gap: 0.75rem;
   justify-content: flex-start;
+}
+
+.action-hint {
+  margin: 0;
 }
 
 .button {
@@ -136,6 +169,99 @@ label {
   margin-top: 0;
 }
 
+.process-panel {
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 0.9rem;
+  background: linear-gradient(145deg, #f8fbf6 0%, #ffffff 45%, #f3f7ff 100%);
+}
+
+.process-panel h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.process-panel header p {
+  margin: 0.25rem 0 0;
+  color: color-mix(in srgb, var(--foreground) 74%, #60715c);
+  font-size: 0.84rem;
+}
+
+.process-steps {
+  list-style: none;
+  margin: 0.85rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.process-step {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.65rem;
+}
+
+.process-step strong {
+  font-size: 0.9rem;
+}
+
+.process-step p {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--foreground) 74%, #667868);
+}
+
+.step-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+  background: #c8d2c2;
+}
+
+.process-step.active {
+  background: #eef5e8;
+}
+
+.process-step.active .step-dot {
+  background: #4f7c37;
+  box-shadow: 0 0 0 4px rgba(79, 124, 55, 0.15);
+}
+
+.process-step.done .step-dot {
+  background: #2f6f3b;
+}
+
+.ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.ticket-grid p {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.55rem;
+  background: #fff;
+}
+
+.ticket-grid span {
+  display: block;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--foreground) 65%, #738170);
+}
+
+.ticket-grid strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  word-break: break-word;
+}
+
 .history-wrap {
   margin-top: 1.25rem;
   border-top: 1px dashed var(--border);
@@ -156,7 +282,7 @@ label {
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -177,6 +303,31 @@ label {
   display: block;
   margin-top: 0.35rem;
   font-size: 1.05rem;
+}
+
+.chip-row {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.83rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: linear-gradient(130deg, #487239, #2f5b2f);
+  color: #fff;
+  border-color: #2f5b2f;
 }
 
 .empty-state {
@@ -230,6 +381,34 @@ label {
   border-bottom: none;
 }
 
+.history-row-highlight {
+  animation: row-glow 2.8s ease-out;
+  background: color-mix(in srgb, #e8f6df 65%, #ffffff);
+}
+
+.status-pill {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-pill.approved {
+  background: #e8f6e8;
+  color: #176138;
+}
+
+.status-pill.rejected {
+  background: #fdecee;
+  color: #8f1e2a;
+}
+
+.status-pill.manual-review {
+  background: #fff4dd;
+  color: #7d5600;
+}
+
 .identity-bar {
   display: flex;
   justify-content: space-between;
@@ -277,5 +456,24 @@ label {
 
   .summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes row-glow {
+  0% {
+    background: color-mix(in srgb, #d6efc6 75%, #ffffff);
+  }
+
+  100% {
+    background: transparent;
   }
 }
