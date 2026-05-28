@@ -453,16 +453,18 @@ export function ExpenseIntakeForm({
               ))}
             </ul>
 
-            <div className="ticket-grid">
-              <p>
-                <span>Started</span>
-                <strong>{formatStartedAt(submissionStartedAt)}</strong>
-              </p>
-              <p>
-                <span>Correlation ID</span>
-                <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
-              </p>
-            </div>
+            {submissionStage !== "success" ? (
+              <div className="ticket-grid">
+                <p>
+                  <span>Started</span>
+                  <strong>{formatStartedAt(submissionStartedAt)}</strong>
+                </p>
+                <p>
+                  <span>Correlation ID</span>
+                  <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
+                </p>
+              </div>
+            ) : null}
           </section>
         ) : null}
 
@@ -489,14 +491,6 @@ export function ExpenseIntakeForm({
           <p>
             <strong>Reason:</strong> {result.statusReason}
           </p>
-          <p>
-            <strong>Correlation ID:</strong> {result.correlationId}
-          </p>
-          {result.expenseId ? (
-            <p>
-              <strong>Expense ID:</strong> {result.expenseId}
-            </p>
-          ) : null}
         </section>
       ) : null}
 
