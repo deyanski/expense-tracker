@@ -27,6 +27,41 @@ body {
   padding: 2rem;
 }
 
+.home-shell {
+  width: min(56rem, 100%);
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0.2rem 0.1rem;
+}
+
+.top-nav-title {
+  margin: 0;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 72%, #59784c);
+}
+
+.top-nav-link {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.84rem;
+  text-decoration: none;
+  color: #215f2f;
+  background: #fff;
+  font-weight: 700;
+}
+
+.top-nav-link:hover {
+  background: #f0f7eb;
+}
+
 .card {
   width: min(56rem, 100%);
   border: 1px solid var(--border);
@@ -461,9 +496,40 @@ label {
   padding: 0.1rem 0.25rem;
 }
 
+.director-shell {
+  width: min(72rem, 100%);
+}
+
+.director-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.director-chat-wrap {
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.director-chat-frame {
+  width: 100%;
+  min-height: 70dvh;
+  border: 0;
+}
+
 @media (max-width: 760px) {
   .page {
     padding: 1rem;
+  }
+
+  .top-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .form-grid {
@@ -481,6 +547,10 @@ label {
   .actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .director-header {
+    flex-direction: column;
   }
 
   .ticket-grid {

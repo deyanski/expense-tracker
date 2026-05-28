@@ -438,8 +438,6 @@ export function ExpenseIntakeForm({
                 {submissionStage === "uploading" && "Uploading receipt"}
                 {submissionStage === "ocr" && "Extracting receipt details"}
                 {submissionStage === "policy" && "Evaluating policy rules"}
-                {submissionStage === "success" && "Completed"}
-                {submissionStage === "error" && "Needs attention"}
               </p>
             </header>
 
@@ -455,18 +453,16 @@ export function ExpenseIntakeForm({
               ))}
             </ul>
 
-            {submissionStage !== "success" ? (
-              <div className="ticket-grid">
-                <p>
-                  <span>Started</span>
-                  <strong>{formatStartedAt(submissionStartedAt)}</strong>
-                </p>
-                <p>
-                  <span>Correlation ID</span>
-                  <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
-                </p>
-              </div>
-            ) : null}
+            <div className="ticket-grid">
+              <p>
+                <span>Started</span>
+                <strong>{formatStartedAt(submissionStartedAt)}</strong>
+              </p>
+              <p>
+                <span>Correlation ID</span>
+                <strong>{activeCorrelationId ?? result?.correlationId ?? "pending"}</strong>
+              </p>
+            </div>
           </section>
         ) : null}
 

@@ -47,10 +47,28 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 }
 
 
+// Validate ../../app/director/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/director">> = Specific
+  const handler = {} as typeof import("../../app/director/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/">> = Specific
   const handler = {} as typeof import("../../app/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/api/director/identity/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/director/identity">> = Specific
+  const handler = {} as typeof import("../../app/api/director/identity/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

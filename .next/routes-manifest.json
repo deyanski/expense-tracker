@@ -42,6 +42,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/api/director/identity",
+      "regex": "^/api/director/identity(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/director/identity(?:/)?$"
+    },
+    {
       "page": "/api/expenses",
       "regex": "^/api/expenses(?:/)?$",
       "routeKeys": {},
@@ -64,6 +70,12 @@
       "regex": "^/api/uploads/receipt(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/uploads/receipt(?:/)?$"
+    },
+    {
+      "page": "/director",
+      "regex": "^/director(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/director(?:/)?$"
     }
   ],
   "dataRoutes": [],
