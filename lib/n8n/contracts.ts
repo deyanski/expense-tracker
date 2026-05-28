@@ -88,7 +88,7 @@ export const policyWebhookInputSchema = z.object({
       sizeBytes: z.number().int().positive(),
     })
     .optional(),
-  ocr: ocrWebhookOutputSchema.optional(),
+    ocr: z.union([ocrWebhookOutputSchema, z.object({}).strict()]),
   textOnly: z.boolean(),
 });
 

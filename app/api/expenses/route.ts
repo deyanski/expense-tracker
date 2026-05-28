@@ -163,7 +163,7 @@ export async function POST(request: Request) {
       },
       comment: effectiveComment,
       receipt: uploadedReceipt,
-      ocr: ocrResult,
+      ocr: ocrResult ?? {},
       textOnly: !uploadedReceipt,
     });
 
