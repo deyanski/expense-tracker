@@ -119,7 +119,7 @@ export function DirectorEmbeddedChat({ identity, onSignOut }: DirectorEmbeddedCh
       <header className="director-header">
         <div>
           <h1>Director Console</h1>
-          <p className="lede">Ask about totals, rejections, pending approvals, and employee-specific expenses.</p>
+          <p className="lede">Ask focused questions about spend, trends, approvals, and policy risk.</p>
         </div>
         <div className="identity-chip">
           <span>{identity.fullName}</span>

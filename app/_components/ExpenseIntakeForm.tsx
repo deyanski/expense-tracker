@@ -378,7 +378,7 @@ export function ExpenseIntakeForm({
       <header className="identity-bar">
         <div>
           <h1>Expense Submission</h1>
-          <p className="lede">Submit your expense after successful identity check.</p>
+          <p className="lede">Capture a receipt or add context, then submit for policy review.</p>
         </div>
         <div className="identity-chip">
           <span>{identity.fullName}</span>
@@ -405,7 +405,7 @@ export function ExpenseIntakeForm({
 
         <label className="field-wide upload-zone">
           <span className="upload-title">Receipt Upload</span>
-          <span className="hint">JPG, JPEG, PNG, WEBP, GIF up to 10 MB</span>
+          <span className="hint">JPG, JPEG, PNG, WEBP, or GIF up to 10 MB</span>
           <input
             className="input upload-input"
             type="file"

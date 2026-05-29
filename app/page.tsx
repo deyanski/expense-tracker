@@ -6,7 +6,7 @@ export default function HomePage() {
     <main className="page">
       <section className="home-shell">
         <header className="top-nav">
-          <p className="top-nav-title">Expense Tracker</p>
+          <p className="top-nav-title">Expense Tracker Workspace</p>
           <Link className="top-nav-link" href="/director">
             Director Console
           </Link>

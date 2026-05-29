@@ -292,7 +292,7 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
       <header className="director-overview-head">
         <div>
           <h2>Finance Overview</h2>
-          <p className="lede">Live operations view for approvals, rejections, and policy friction.</p>
+          <p className="lede">Real-time approvals, spend exposure, and policy friction at a glance.</p>
         </div>
         <button
           className="button secondary"
