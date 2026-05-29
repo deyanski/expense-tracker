@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { CircleCheck, LogOut, Send, Upload } from "lucide-react";
 import {
   ALLOWED_RECEIPT_MIME_TYPES,
   MAX_RECEIPT_SIZE_BYTES,
@@ -385,6 +386,7 @@ export function ExpenseIntakeForm({
           <span className="dot">•</span>
           <span>{identity.employeeId}</span>
           <button className="link-button" type="button" onClick={onChangeIdentity}>
+            <LogOut className="icon-xs" aria-hidden="true" />
             Change
           </button>
         </div>
@@ -404,7 +406,10 @@ export function ExpenseIntakeForm({
         </label>
 
         <label className="field-wide upload-zone">
-          <span className="upload-title">Receipt Upload</span>
+          <span className="upload-title title-with-icon">
+            <Upload className="icon-sm" aria-hidden="true" />
+            Receipt Upload
+          </span>
           <span className="hint">JPG, JPEG, PNG, WEBP, or GIF up to 10 MB</span>
           <input
             className="input upload-input"
@@ -467,7 +472,8 @@ export function ExpenseIntakeForm({
         ) : null}
 
         <div className="field-wide actions">
-          <button className="button" type="submit" disabled={submitting}>
+          <button className="button with-icon" type="submit" disabled={submitting}>
+            <Send className="icon-xs" aria-hidden="true" />
             {submitting ? submissionButtonLabel : "Submit Expense"}
           </button>
           <span className="hint action-hint">
@@ -482,7 +488,10 @@ export function ExpenseIntakeForm({
 
       {result ? (
         <section className="result-box">
-          <h2>Submission Result</h2>
+          <h2 className="title-with-icon">
+            <CircleCheck className="icon-sm" aria-hidden="true" />
+            Submission Result
+          </h2>
           <p>
             <strong>Status:</strong> {result.status}
           </p>

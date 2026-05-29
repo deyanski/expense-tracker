@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { CircleAlert, CircleCheck, RotateCcw, XCircle } from "lucide-react";
 import type { DirectorIdentity } from "@/lib/schemas/identity";
 import type {
   DirectorOverviewResponse,
@@ -295,11 +296,12 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
           <p className="lede">Real-time approvals, spend exposure, and policy friction at a glance.</p>
         </div>
         <button
-          className="button secondary"
+          className="button secondary with-icon"
           type="button"
           onClick={() => setRefreshKey((value) => value + 1)}
           disabled={loading}
         >
+          <RotateCcw className="icon-xs" aria-hidden="true" />
           {loading ? "Refreshing..." : "Refresh"}
         </button>
       </header>
@@ -413,7 +415,7 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
 
         <div className="actions">
           <button
-            className="button secondary"
+            className="button secondary with-icon"
             type="button"
             onClick={() => {
               setStatusFilter("all");
@@ -424,6 +426,7 @@ export function DirectorOverviewPanel({ identity }: DirectorOverviewPanelProps) 
               setPage(1);
             }}
           >
+            <RotateCcw className="icon-xs" aria-hidden="true" />
             Reset Filters
           </button>
         </div>
@@ -550,27 +553,30 @@ function DirectorTableRow({
       <td>
         <div className="row-actions">
           <button
-            className="chip"
+            className="chip with-icon"
             type="button"
             onClick={() => onDecision(item.id, "Approved")}
             disabled={busy}
           >
+            <CircleCheck className="icon-xs" aria-hidden="true" />
             Approve
           </button>
           <button
-            className="chip"
+            className="chip with-icon"
             type="button"
             onClick={() => onDecision(item.id, "Rejected")}
             disabled={busy}
           >
+            <XCircle className="icon-xs" aria-hidden="true" />
             Reject
           </button>
           <button
-            className="chip"
+            className="chip with-icon"
             type="button"
             onClick={() => onDecision(item.id, "Manual Review")}
             disabled={busy}
           >
+            <CircleAlert className="icon-xs" aria-hidden="true" />
             Review
           </button>
         </div>

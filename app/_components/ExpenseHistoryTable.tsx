@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { CircleAlert, CircleCheck, ReceiptText, RefreshCcw, XCircle } from "lucide-react";
 import type { ExpenseHistoryResponse } from "@/lib/schemas/expense";
 
 type ExpenseHistoryTableProps = {
@@ -61,7 +62,8 @@ export function ExpenseHistoryTable({
     <section className="history-wrap" aria-live="polite">
       <div className="history-header">
         <h2>Recent Expenses</h2>
-        <button className="button secondary" type="button" onClick={onRefresh} disabled={loading}>
+        <button className="button secondary with-icon" type="button" onClick={onRefresh} disabled={loading}>
+          <RefreshCcw className="icon-xs" aria-hidden="true" />
           {loading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
@@ -146,10 +148,24 @@ export function ExpenseHistoryTable({
                         .toLowerCase()
                         .replace(" ", "-")}`}
                     >
+                      {item.status === "Approved" ? (
+                        <CircleCheck className="icon-xs" aria-hidden="true" />
+                      ) : null}
+                      {item.status === "Rejected" ? (
+                        <XCircle className="icon-xs" aria-hidden="true" />
+                      ) : null}
+                      {item.status === "Manual Review" ? (
+                        <CircleAlert className="icon-xs" aria-hidden="true" />
+                      ) : null}
                       {item.status}
                     </span>
                   </td>
-                  <td>{item.hasReceipt ? "Yes" : "No"}</td>
+                  <td>
+                    <span className="receipt-indicator">
+                      <ReceiptText className="icon-xs" aria-hidden="true" />
+                      {item.hasReceipt ? "Yes" : "No"}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

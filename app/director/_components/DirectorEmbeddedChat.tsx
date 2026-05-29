@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId } from "react";
+import { LogOut } from "lucide-react";
 import type { DirectorIdentity } from "@/lib/schemas/identity";
 
 type DirectorEmbeddedChatProps = {
@@ -85,6 +86,7 @@ export function DirectorEmbeddedChat({ identity, onSignOut }: DirectorEmbeddedCh
             <p className="lede">Director chat webhook is not configured.</p>
           </div>
           <button className="link-button" type="button" onClick={onSignOut}>
+            <LogOut className="icon-xs" aria-hidden="true" />
             Sign out
           </button>
         </header>
@@ -106,6 +108,7 @@ export function DirectorEmbeddedChat({ identity, onSignOut }: DirectorEmbeddedCh
             <p className="lede">Director chat webhook URL is invalid.</p>
           </div>
           <button className="link-button" type="button" onClick={onSignOut}>
+            <LogOut className="icon-xs" aria-hidden="true" />
             Sign out
           </button>
         </header>
@@ -126,6 +129,7 @@ export function DirectorEmbeddedChat({ identity, onSignOut }: DirectorEmbeddedCh
           <span className="dot">•</span>
           <span>{identity.directorId}</span>
           <button className="link-button" type="button" onClick={onSignOut}>
+            <LogOut className="icon-xs" aria-hidden="true" />
             Sign out
           </button>
         </div>

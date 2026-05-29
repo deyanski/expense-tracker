@@ -82,6 +82,9 @@ body {
   background: rgba(255, 255, 255, 0.8);
   font-weight: 700;
   transition: background 160ms ease, border-color 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .top-nav-link:hover {
@@ -210,6 +213,9 @@ label {
   font-weight: 700;
   cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .button:hover:not(:disabled) {
@@ -432,6 +438,33 @@ label {
   font-weight: 600;
   padding: 0.32rem 0.68rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.icon-xs {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+.icon-sm {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
 }
 
 .chip.active {
@@ -498,10 +531,18 @@ label {
 
 .status-pill {
   display: inline-flex;
+  align-items: center;
+  gap: 0.24rem;
   border-radius: 999px;
   padding: 0.2rem 0.52rem;
   font-size: 0.74rem;
   font-weight: 700;
+}
+
+.receipt-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .status-pill.approved {
@@ -549,6 +590,9 @@ label {
   cursor: pointer;
   font-weight: 700;
   padding: 0.1rem 0.24rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .link-button:hover {

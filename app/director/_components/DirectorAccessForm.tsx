@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import type { DirectorIdentity } from "@/lib/schemas/identity";
 
 type DirectorAccessFormProps = {
@@ -61,7 +62,10 @@ export function DirectorAccessForm({ onVerified }: DirectorAccessFormProps) {
 
   return (
     <section className="card director-shell">
-      <h1>Director Console</h1>
+      <h1 className="title-with-icon">
+        <ShieldCheck className="icon-sm" aria-hidden="true" />
+        Director Console
+      </h1>
       <p className="lede">Enter full name and personal ID to access the finance assistant.</p>
 
       <form className="form-grid" onSubmit={handleSubmit}>
@@ -88,7 +92,8 @@ export function DirectorAccessForm({ onVerified }: DirectorAccessFormProps) {
         </label>
 
         <div className="field-wide actions">
-          <button className="button" type="submit" disabled={submitting}>
+          <button className="button with-icon" type="submit" disabled={submitting}>
+            <KeyRound className="icon-xs" aria-hidden="true" />
             {submitting ? "Checking access..." : "Open Director Console"}
           </button>
         </div>

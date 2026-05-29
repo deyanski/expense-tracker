@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { BadgeCheck, UserRound } from "lucide-react";
 import type { EmployeeIdentity } from "@/lib/schemas/identity";
 
 type IdentityGateProps = {
@@ -71,7 +72,10 @@ export function EmployeeIdentityGate({
 
   return (
     <section className="card">
-      <h1>Employee Identity Check</h1>
+      <h1 className="title-with-icon">
+        <UserRound className="icon-sm" aria-hidden="true" />
+        Employee Identity Check
+      </h1>
       <p className="lede">
         Enter your full name and employee ID to continue to expense submission.
       </p>
@@ -100,7 +104,8 @@ export function EmployeeIdentityGate({
         </label>
 
         <div className="field-wide actions">
-          <button className="button" type="submit" disabled={submitting}>
+          <button className="button with-icon" type="submit" disabled={submitting}>
+            <BadgeCheck className="icon-xs" aria-hidden="true" />
             {submitting ? "Verifying..." : "Continue"}
           </button>
         </div>
